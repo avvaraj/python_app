@@ -6,12 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git credentialsId: 'github-creds', url: 'https://github.com/avvaraj/python_app.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
