@@ -1,3 +1,13 @@
-FROM python:3.9
-COPY app.py /app.py
-CMD ["python", "/app.py"]
+# Using Python image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy files
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY . .
+
+# Run the app
+CMD ["python", "app.py"]
