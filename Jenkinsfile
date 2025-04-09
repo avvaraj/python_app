@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-creds') // already created
-        IMAGE_NAME = 'avvaraj/python_app'
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-creds')
+        IMAGE_NAME = 'rnkh41/python'
     }
 
     stages {
@@ -16,7 +16,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                    echo "Building Docker image: ${IMAGE_NAME}:${BUILD_NUMBER}"
+                    dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
                 }
             }
         }
@@ -24,8 +25,10 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
+                    echo "Pushing Docker image to Docker Hub..."
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("${IMAGE_NAME}:${BUILD_NUMBER}").push()
+                        dockerImage.push()
+                        dockerImage.push('latest') // Optional but useful for Kubernetes deployment
                     }
                 }
             }
@@ -33,8 +36,18 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                echo "Deploying to Kubernetes..."
                 sh 'kubectl apply -f deployment.yaml'
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline executed successfully."
+        }
+        failure {
+            echo "Pipeline failed. Check logs above."
         }
     }
 }
