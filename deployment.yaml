@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: rnkh41/python:latest
+        image: rnkh41/python:${BUILD_NUMBER}
         ports:
         - containerPort: 5000
 
