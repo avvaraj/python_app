@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-creds')
         IMAGE_NAME = 'rnkh41/python'
     }
 
@@ -17,8 +16,7 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image: ${IMAGE_NAME}:${BUILD_NUMBER}"
-                    def dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
-                    env.BUILT_IMAGE = "${IMAGE_NAME}:${BUILD_NUMBER}"
+                    dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
                 }
             }
         }
@@ -27,8 +25,7 @@ pipeline {
             steps {
                 script {
                     echo "Pushing Docker image to Docker Hub..."
-                    def dockerImage = docker.image(env.BUILT_IMAGE)
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
                         dockerImage.push()
                         dockerImage.push('latest')
                     }
@@ -38,10 +35,8 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    echo "Deploying to Kubernetes..."
-                    sh 'kubectl apply -f deployment.yaml'
-                }
+                echo "Deploying to Kubernetes..."
+                sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
