@@ -37,7 +37,7 @@ pipeline {
             steps {
                 echo "Deploying to Kubernetes..."
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-					sh 'kubectl apply -f deployment.yaml --validate=false'
+					sh 'kubectl apply -f deployment.yaml'
                 }
             }
         }
