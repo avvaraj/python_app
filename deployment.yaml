@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-app
+  namespace: jenkins
 spec:
   replicas: 1
   selector:
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: rnkh41/python:${BUILD_NUMBER}
+        image: rnkh41/python:latest
         ports:
         - containerPort: 5000
 
@@ -24,6 +25,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: python-app-service
+  namespace: jenkins
 spec:
   type: NodePort
   selector:
