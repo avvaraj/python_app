@@ -16,6 +16,7 @@ spec:
       containers:
       - name: python-app
         image: rnkh41/python:latest
+        imagePullPolicy: Always  # Ensures latest image is always pulled
         ports:
         - containerPort: 5000
 
